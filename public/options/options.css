@@ -69,7 +69,7 @@ html, body {
     padding: 0;
     font-size: 14px;
     background-color: var(--background);
-    overflow-x: hidden;
+    overflow-x: clip;
     min-height: 100vh;
 }
 
@@ -102,13 +102,15 @@ html, body {
     min-width: 240px;
     max-width: 280px;
     flex-shrink: 0;
+    align-self: flex-start;
     border-radius: 18px;
     margin: 24px 20px 24px 0;
-    z-index: 10;
+    z-index: 100;
     background-color: var(--menu-background);
     border: 1px solid var(--border-color);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     color: var(--menu-foreground);
+    position: -webkit-sticky;
     position: sticky;
     top: 24px;
     height: fit-content;
@@ -725,14 +727,15 @@ input:checked + .slider:before {
 #title-bar-logo {
     width: 52px;
     height: 52px;
-    border-radius: 14px;
-    box-shadow: 0 4px 18px rgba(255, 26, 64, 0.35);
     margin-bottom: 8px;
-    transition: transform 0.2s ease;
+    background: transparent;
+    filter: drop-shadow(0 4px 14px rgba(255, 26, 64, 0.45));
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), filter 0.2s ease;
 }
 
 #title-bar-logo:hover {
-    transform: scale(1.05);
+    transform: scale(1.06);
+    filter: drop-shadow(0 6px 20px rgba(255, 26, 64, 0.65));
 }
 
 .titleBarText {

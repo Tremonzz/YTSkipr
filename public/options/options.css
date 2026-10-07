@@ -300,9 +300,10 @@ html, body {
     border-bottom: inherit;
 }
 
-.optionLabel, #version {
+.optionLabel {
     font-size: 14px;
-    height: 15px;
+    color: #f4f4f5;
+    font-weight: 500;
 }
 
 div[data-type="keybind-change"] .optionLabel {
@@ -311,8 +312,32 @@ div[data-type="keybind-change"] .optionLabel {
     margin-right: 20px;
 }
 
-input[type='number'] {
-    width: 50px;
+input[type='number'], .sb-number-input {
+    background-color: #16161b;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    padding: 7px 12px;
+    border-radius: 9px;
+    outline: none;
+    width: 75px;
+    text-align: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    box-sizing: border-box;
+}
+
+input[type='number']:hover, .sb-number-input:hover {
+    border-color: rgba(255, 26, 64, 0.6);
+    background-color: #1d1d24;
+}
+
+input[type='number']:focus, .sb-number-input:focus {
+    border-color: #FF1A40;
+    background-color: #1d1d24;
+    box-shadow: 0 0 0 2px rgba(255, 26, 64, 0.25);
 }
 
 .key {
@@ -454,6 +479,44 @@ input[type='number'] {
 
 .medium-description {
     font-size: 15px;
+}
+
+input[type='text'],
+input[type='password'],
+input[type='url'],
+.option-text-box,
+textarea {
+    background-color: #16161b;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    padding: 8px 12px;
+    border-radius: 9px;
+    outline: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    box-sizing: border-box;
+}
+
+input[type='text']:hover,
+input[type='password']:hover,
+input[type='url']:hover,
+.option-text-box:hover,
+textarea:hover {
+    border-color: rgba(255, 26, 64, 0.6);
+    background-color: #1d1d24;
+}
+
+input[type='text']:focus,
+input[type='password']:focus,
+input[type='url']:focus,
+.option-text-box:focus,
+textarea:focus {
+    border-color: #FF1A40;
+    background-color: #1d1d24;
+    box-shadow: 0 0 0 2px rgba(255, 26, 64, 0.25);
 }
 
 .option-text-box {
@@ -715,13 +778,19 @@ svg {
     text-decoration: none; 
 }
 
+.number-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+
 .number-container:before {
     content: attr(label-name);
     padding-right: 4px;
     width: max-content;
-
     font-size: 14px;
-    color: white;
+    color: #f4f4f5;
+    font-weight: 500;
 }
 
 /* React and Component styles */

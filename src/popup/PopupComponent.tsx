@@ -142,46 +142,54 @@ export const PopupComponent = () => {
                 {getVideoStatusText(status)}
             </p>
 
-            {/* Controls Menu */}
-            <div className="sbControlsMenu">
-                {
-                    videoID &&
-                        <SkipProfileButton
-                            videoID={videoID}
-                            setShowForceChannelCheckWarning={setShowForceChannelCheckWarning}
-                        />
-                }
-                <label id="disableExtension" htmlFor="toggleSwitch" className="toggleSwitchContainer sbControlsMenu-item" role="button" tabIndex={0}>
-                    <span className="toggleSwitchContainer-switch">
-                        <input type="checkbox" 
-                            style={{ "display": "none" }} 
-                            id="toggleSwitch" 
-                            checked={extensionEnabled}
-                            onChange={(e) => {
-                                Config.config!.disableSkipping = !e.target.checked;
-                                setExtensionEnabled(e.target.checked);
-                            }}/>
-                        <span className="switchBg shadow"></span>
-                        <span className="switchBg white"></span>
-                        <span className="switchBg green"></span>
-                        <span className="switchDot"></span>
-                    </span>
-                    <span id="disableSkipping" className={extensionEnabled ? " hidden" : ""}>
-                        {chrome.i18n.getMessage("enableSkipping")}
-                    </span>
-                    <span id="enableSkipping" className={!extensionEnabled ? " hidden" : ""}>
-                        {chrome.i18n.getMessage("disableSkipping")}
-                    </span>
-                </label>
-                <button id="optionsButton" 
-                    className="sbControlsMenu-item" 
-                    title={chrome.i18n.getMessage("Options")}
+            {/* Controls Menu (Option 2) */}
+            <div className="sb-controls-container">
+                {/* Hero Toggle Card: Attivazione/Disattivazione estensione */}
+                <div
+                    className="sb-hero-toggle"
+                    role="button"
+                    tabIndex={0}
                     onClick={() => {
-                        chrome.runtime.sendMessage({ "message": "openConfig" });
-                    }}>
-                    <img src="/icons/settings.svg" alt="Settings icon" width="23" height="23" className="sbControlsMenu-itemIcon" id="sbPopupIconSettings" />
-                    {chrome.i18n.getMessage("Options")}
-                </button>
+                        const newState = !extensionEnabled;
+                        Config.config!.disableSkipping = !newState;
+                        setExtensionEnabled(newState);
+                    }}
+                >
+                    <div className="sb-hero-toggle-info">
+                        <div className={`sb-status-dot ${extensionEnabled ? "active" : "inactive"}`} />
+                        <div>
+                            <div className="sb-hero-title">Stato Estensione</div>
+                            <div className="sb-hero-desc">
+                                {extensionEnabled ? "Estensione attiva" : "Estensione in pausa"}
+                            </div>
+                        </div>
+                    </div>
+                    <div className={`sb-modern-switch ${extensionEnabled ? "active" : ""}`}>
+                        <div className="sb-modern-switch-thumb" />
+                    </div>
+                </div>
+
+                {/* Bottom 2 Action Chips */}
+                <div className="sb-action-chips">
+                    <SkipProfileButton
+                        videoID={videoID}
+                        setShowForceChannelCheckWarning={setShowForceChannelCheckWarning}
+                    />
+                    <button
+                        id="optionsButton"
+                        className="sb-action-chip"
+                        title={chrome.i18n.getMessage("Options")}
+                        onClick={() => {
+                            chrome.runtime.sendMessage({ "message": "openConfig" });
+                        }}
+                    >
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#a1a1aa" }}>
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                        <span>{chrome.i18n.getMessage("Options")}</span>
+                    </button>
+                </div>
             </div>
 
             {
@@ -375,7 +383,7 @@ window.addEventListener("message", async (e): Promise<void> => {
     }
 });
 
-function SkipProfileButton(props: {videoID: string; setShowForceChannelCheckWarning: (v: boolean) => void}): JSX.Element {
+function SkipProfileButton(props: {videoID: string | null; setShowForceChannelCheckWarning: (v: boolean) => void}): JSX.Element {
     const [menuOpen, setMenuOpen] = React.useState(false);
     const channelSkipProfileSet = getSkipProfileIDForChannel() !== null;
     const skipProfileSet = getSkipProfileID() !== null;
@@ -384,42 +392,43 @@ function SkipProfileButton(props: {videoID: string; setShowForceChannelCheckWarn
         setMenuOpen(false);
     }, [props.videoID]);
 
-    return (
-        <>
-            <label id="skipProfileButton" 
-                    htmlFor="skipProfileToggle"
-                    className="toggleSwitchContainer sbControlsMenu-item"
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => {
-                        if (menuOpen && !Config.config.forceChannelCheck && getSkipProfileID() !== null) {
-                            props.setShowForceChannelCheckWarning(true);
-                        }
+    let labelText = "Consenti Canale";
+    if (menuOpen) {
+        labelText = "Chiudi";
+    } else if (channelSkipProfileSet) {
+        labelText = "Canale Modificato";
+    } else if (skipProfileSet) {
+        labelText = "Profilo Attivo";
+    }
 
-                        setMenuOpen(!menuOpen);
-                    }}>
-                <svg viewBox="0 0 24 24" width="23" height="23" className={"SBWhitelistIcon sbControlsMenu-itemIcon " + (menuOpen ? " rotated" : "")}>
+    return (
+        <div style={{ position: "relative" }}>
+            <button
+                id="skipProfileButton" 
+                className={`sb-action-chip ${!props.videoID ? "disabled" : ""}`}
+                type="button"
+                style={{ width: "100%", boxSizing: "border-box" }}
+                title={chrome.i18n.getMessage("addChannelToSkipProfile")}
+                onClick={() => {
+                    if (!props.videoID) return;
+                    if (menuOpen && !Config.config.forceChannelCheck && getSkipProfileID() !== null) {
+                        props.setShowForceChannelCheckWarning(true);
+                    }
+
+                    setMenuOpen(!menuOpen);
+                }}
+            >
+                <svg viewBox="0 0 24 24" width="14" height="14" className={"SBWhitelistIcon " + (menuOpen ? "rotated" : "")}>
                     <path d="M24 10H14V0h-4v10H0v4h10v10h4V14h10z" />
                 </svg>
-                <span id="whitelistChannel" className={!(!menuOpen && !channelSkipProfileSet && !skipProfileSet) ? " hidden" : ""}>
-                    {chrome.i18n.getMessage("addChannelToSkipProfile")}
-                </span>
-                <span id="whitelistChannel" className={!(!menuOpen && channelSkipProfileSet) ? " hidden" : ""}>
-                    {chrome.i18n.getMessage("editChannelsSkipProfile")}
-                </span>
-                <span id="whitelistChannel" className={!(!menuOpen && !channelSkipProfileSet && skipProfileSet) ? " hidden" : ""}>
-                    {chrome.i18n.getMessage("editActiveSkipProfile")}
-                </span>
-                <span id="unwhitelistChannel" className={!menuOpen ? " hidden" : ""}>
-                    {chrome.i18n.getMessage("closeSkipProfileMenu")}
-                </span>
-            </label>
+                <span>{labelText}</span>
+            </button>
 
             {
                 props.videoID &&
                 <SkipProfileMenu open={menuOpen} videoID={props.videoID} />
             }
-        </>
+        </div>
     );
 }
 

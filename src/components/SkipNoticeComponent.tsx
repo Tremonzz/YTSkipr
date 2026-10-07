@@ -6,7 +6,7 @@ import NoticeComponent from "./NoticeComponent";
 import NoticeTextSelectionComponent from "./NoticeTextSectionComponent";
 import Utils from "../utils";
 const utils = new Utils();
-import { getSkippingText, getUpcomingText, getVoteText } from "../utils/categoryUtils";
+import { getSkippingText, getUpcomingText, getVoteText, shortCategoryName } from "../utils/categoryUtils";
 
 import ThumbsUpSvg from "../svg-icons/thumbs_up_svg";
 import ThumbsDownSvg from "../svg-icons/thumbs_down_svg";
@@ -102,8 +102,16 @@ class SkipNoticeComponent extends React.Component<SkipNoticeProps, SkipNoticeSta
         this.segments = props.segments;
         this.autoSkip = props.autoSkip;
         this.contentContainer = props.contentContainer;
-
-        const noticeTitle = this.props.voteNotice ? getVoteText(this.segments) : !this.props.upcomingNotice ? getSkippingText(this.segments, this.props.autoSkip) : getUpcomingText(this.segments);
+        let noticeTitle = "";
+        if (this.props.voteNotice) {
+            noticeTitle = getVoteText(this.segments);
+        } else if (this.props.upcomingNotice) {
+            const categoryName = shortCategoryName(this.segments[0].category);
+            const skipWord = chrome.i18n.getMessage("skip") || "Salta";
+            noticeTitle = `${skipWord} ${categoryName}`;
+        } else {
+            noticeTitle = getSkippingText(this.segments, this.props.autoSkip);
+        }
 
         const previousSkipNotices = document.querySelectorAll(".sponsorSkipNoticeParent:not(.sponsorSkipUpcomingNotice)");
         this.amountOfPreviousNotices = previousSkipNotices.length;
@@ -178,10 +186,15 @@ class SkipNoticeComponent extends React.Component<SkipNoticeProps, SkipNoticeSta
         }
 
         const firstColumn = this.getSkipButton(0);
+        const onMessageClick = this.props.upcomingNotice ? () => {
+            this.reskip(0, 0, true);
+            this.closeListener();
+        } : undefined;
 
         return (
             <NoticeComponent 
                 noticeTitle={this.state.noticeTitle}
+                onMessageClick={onMessageClick}
                 amountOfPreviousNotices={this.amountOfPreviousNotices}
                 showInSecondSlot={this.showInSecondSlot}
                 idSuffix={this.idSuffix}

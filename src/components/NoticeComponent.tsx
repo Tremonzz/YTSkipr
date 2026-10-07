@@ -35,6 +35,7 @@ export interface NoticeProps {
     // Callback for when this is closed
     closeListener: () => void;
     onMouseEnter?: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void;
+    onMessageClick?: () => void;
 
     zIndex?: number;
     style?: React.CSSProperties;
@@ -170,7 +171,9 @@ class NoticeComponent extends React.Component<NoticeProps, NoticeState> {
                             <tr id={"sponsorSkipNoticeFirstRow" + this.idSuffix}
                                     className="sponsorSkipNoticeFirstRow">
                                 {/* Left column */}
-                                <td className="noticeLeftIcon">
+                                <td className="noticeLeftIcon"
+                                    onClick={this.props.onMessageClick}
+                                    style={this.props.onMessageClick ? { cursor: "pointer" } : undefined}>
                                     {/* Logo */}
                                     {!this.props.hideLogo &&
                                         (

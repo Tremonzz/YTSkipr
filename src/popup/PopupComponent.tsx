@@ -1,17 +1,11 @@
 import * as React from "react";
-import { YourWorkComponent } from "./YourWorkComponent";
-import { isSafari } from "../../maze-utils/src/config";
-import { showDonationLink } from "../utils/configUtils";
-import Config, { ConfigurationID, generateDebugDetails } from "../config";
-import { IsInfoFoundMessageResponse, LogResponse, Message, MessageResponse, PopupMessage } from "../messageTypes";
-import { AnimationUtils } from "../../maze-utils/src/animationUtils";
-import { SegmentListComponent } from "./SegmentListComponent";
+import Config, { ConfigurationID } from "../config";
+import { IsInfoFoundMessageResponse, Message, MessageResponse, PopupMessage } from "../messageTypes";
 import { ActionType, SegmentUUID, SponsorSourceType, SponsorTime } from "../types";
-import { SegmentSubmissionComponent } from "./SegmentSubmissionComponent";
-import { copyToClipboardPopup } from "./popupUtils";
 import { getSkipProfileID, getSkipProfileIDForChannel, getSkipProfileIDForTab, getSkipProfileIDForTime, getSkipProfileIDForVideo, setCurrentTabSkipProfile } from "../utils/skipProfiles";
 import { SelectOptionComponent } from "../components/options/SelectOptionComponent";
 import * as Video from "../../maze-utils/src/video";
+import MiniDashboardComponent from "../components/MiniDashboardComponent";
 
 export enum LoadingStatus {
     Loading,
@@ -79,6 +73,8 @@ export const PopupComponent = () => {
     const [loopedChapter, setLoopedChapter] = React.useState<SegmentUUID | null>(null);
 
     const [videoID, setVideoID] = React.useState<string | null>(null);
+    const [minutesSaved, setMinutesSaved] = React.useState(Config.config?.minutesSaved ?? 0);
+    const [skipCount, setSkipCount] = React.useState(Config.config?.skipCount ?? 0);
 
     React.useEffect(() => {
         loadSegments({
@@ -99,6 +95,12 @@ export const PopupComponent = () => {
         });
 
         forwardClickEvents(sendMessage);
+
+        const updateStats = () => {
+            setMinutesSaved(Config.config?.minutesSaved ?? 0);
+            setSkipCount(Config.config?.skipCount ?? 0);
+        };
+        Config.configLocalListeners?.push(updateStats);
     }, []);
 
     return (
@@ -125,7 +127,7 @@ export const PopupComponent = () => {
 
             <header className={"sbPopupLogo " + (Config.config.cleanPopup ? "hidden" : "")}>
                 <img src={Config.config.prideTheme ? "icons/sb-pride.png" : "icons/IconSponsorBlocker256px.png"}
-                    alt="SponsorBlock Logo"
+                    alt="YTSkipr Logo"
                     width="40"
                     height="40"
                     id="sponsorBlockPopupLogo"
@@ -140,33 +142,7 @@ export const PopupComponent = () => {
                 {getVideoStatusText(status)}
             </p>
 
-            <button id="refreshSegmentsButton" title={chrome.i18n.getMessage("refreshSegments")} onClick={(e) => {
-                const stopAnimation = AnimationUtils.applyLoadingAnimation(e.currentTarget, 0.3);
-
-                sendMessage({ message: "refreshSegments" }).then(() => {
-                    loadSegments({
-                        updating: true,
-                        setStatus,
-                        setVideoID,
-                        setCurrentTime,
-                        setSegments,
-                        setLoopedChapter
-                    }).then(() => stopAnimation());
-                });
-
-            }}>
-                <img src="/icons/refresh.svg" alt="Refresh icon" id="refreshSegments" />
-            </button>
-
-            <SegmentListComponent
-                videoID={videoID}
-                currentTime={currentTime}
-                status={status.status}
-                segments={segments}
-                loopedChapter={loopedChapter}
-                sendMessage={sendMessage} />
-
-            {/* Toggle Box */}
+            {/* Controls Menu */}
             <div className="sbControlsMenu">
                 {
                     videoID &&
@@ -183,7 +159,7 @@ export const PopupComponent = () => {
                             checked={extensionEnabled}
                             onChange={(e) => {
                                 Config.config!.disableSkipping = !e.target.checked;
-                                setExtensionEnabled(e.target.checked)
+                                setExtensionEnabled(e.target.checked);
                             }}/>
                         <span className="switchBg shadow"></span>
                         <span className="switchBg white"></span>
@@ -203,7 +179,7 @@ export const PopupComponent = () => {
                     onClick={() => {
                         chrome.runtime.sendMessage({ "message": "openConfig" });
                     }}>
-                <img src="/icons/settings.svg" alt="Settings icon" width="23" height="23" className="sbControlsMenu-itemIcon" id="sbPopupIconSettings" />
+                    <img src="/icons/settings.svg" alt="Settings icon" width="23" height="23" className="sbControlsMenu-itemIcon" id="sbPopupIconSettings" />
                     {chrome.i18n.getMessage("Options")}
                 </button>
             </div>
@@ -217,66 +193,14 @@ export const PopupComponent = () => {
                 </a>
             }
 
-            {
-                !Config.config.cleanPopup && !Config.config.hideSegmentCreationInPopup &&
-                <SegmentSubmissionComponent
-                    videoID={videoID || ""}
-                    status={status.status}
-                    sendMessage={sendMessage} />
-            }
-            
-
-            {/* Your Work box */}
-            {
-                !Config.config.cleanPopup &&
-                <YourWorkComponent/>
-            }
-
-            {/* Footer */}
-            {
-                !Config.config.cleanPopup &&
-                <footer id="sbFooter">
-                    <a id="helpButton"
-                        onClick={() => {
-                            chrome.runtime.sendMessage({ "message": "openHelp" });
-                        }}>
-                            {chrome.i18n.getMessage("help")}
-                    </a>
-                    <a href="https://sponsor.ajay.app" target="_blank" rel="noreferrer">
-                        {chrome.i18n.getMessage("website")}
-                    </a>
-                    <a href="https://sponsor.ajay.app/stats" target="_blank" rel="noreferrer" className={isSafari() ? " hidden" : ""}>
-                        {chrome.i18n.getMessage("viewLeaderboard")}
-                    </a>
-                    <a href="https://sponsor.ajay.app/donate" target="_blank" rel="noreferrer" className={!showDonationLink() ? " hidden" : ""} onClick={() => {
-                        Config.config!.donateClicked = Config.config!.donateClicked + 1;
-                    }}>
-                        {chrome.i18n.getMessage("Donate")}
-                    </a>
-                    <br />
-                    <a href="https://github.com/ajayyy/SponsorBlock" target="_blank" rel="noreferrer">
-                        GitHub
-                    </a>
-                    <a href="https://discord.gg/SponsorBlock" target="_blank" rel="noreferrer">
-                        Discord
-                    </a>
-                    <a href="https://matrix.to/#/#sponsor:ajay.app?via=ajay.app&via=matrix.org&via=mozilla.org" target="_blank" rel="noreferrer">
-                        Matrix
-                    </a>
-                    <a href="https://wiki.sponsor.ajay.app/w/Guidelines" target="_blank" rel="noreferrer">
-                        {chrome.i18n.getMessage("guidelines")}
-                    </a>
-                    <br />
-                    <a id="debugLogs"
-                            onClick={async () => {
-                                const logs = await sendMessage({ message: "getLogs" }) as LogResponse;
-
-                                copyToClipboardPopup(`${generateDebugDetails()}\n\nWarn:\n${logs.warn.join("\n")}\n\nDebug:\n${logs.debug.join("\n")}`, sendMessage);
-                            }}>
-                        {chrome.i18n.getMessage("copyDebugLogs")}
-                    </a>
-                </footer>
-            }
+            {/* Dashboard Card */}
+            <div style={{ padding: "0 16px" }}>
+                <MiniDashboardComponent
+                    totalMinutesSaved={minutesSaved}
+                    totalSkips={skipCount}
+                    segments={segments}
+                />
+            </div>
 
             {
                 showNoticeButton &&

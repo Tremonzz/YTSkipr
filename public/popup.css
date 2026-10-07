@@ -72,6 +72,7 @@
   color-scheme: dark;
   max-height: 600px;
   overflow-y: auto;
+  border-radius: 6px;
 }
 
 #sponsorBlockPopupBody {
@@ -83,6 +84,8 @@
   background-color: var(--sb-main-bg-color);
   color: var(--sb-main-fg-color);
   color-scheme: dark;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 #sponsorblockPopup {
@@ -327,7 +330,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 14px;
-  border-radius: 12px;
+  border-radius: 6px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(16px);
@@ -427,7 +430,7 @@
   justify-content: center;
   gap: 7px;
   padding: 8px 12px;
-  border-radius: 10px;
+  border-radius: 6px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: #e4e4e7;

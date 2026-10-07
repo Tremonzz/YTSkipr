@@ -1,31 +1,33 @@
 .sponsorSkipNoticeParent {
     position: absolute;
 
-	bottom: 100px;
-	right: var(--skip-notice-right);
+	bottom: 120px;
+	right: 20px;
 }
 
 .sponsorSkipNoticeParent, .sponsorSkipNotice {
-	border-spacing: var(--skip-notice-border-horizontal) var(--skip-notice-border-vertical);
-	padding-left: var(--skip-notice-padding);
-	padding-right: var(--skip-notice-padding);
+	border-spacing: 0;
+	padding-left: 0;
+	padding-right: 0;
 
-	border-collapse: unset;
+	border-collapse: collapse;
 }
 
 .sponsorSkipNoticeParent {
-	min-width: 390px;
-	max-width: 50%;
+	min-width: unset !important;
+	max-width: unset !important;
+	width: max-content !important;
 }
 
 .sponsorSkipNotice {
-	width: 100%;
+	width: auto;
 }
 
 .sponsorSkipNoticeTableContainer {
 	background-color: rgba(28, 28, 28, 0.9);
-	border-radius: 5px;
-	min-width: 100%;
+	border-radius: 9999px;
+	min-width: unset;
+	width: auto;
 }
 
 .sponsorSkipNoticeTableContainer.prideTheme {

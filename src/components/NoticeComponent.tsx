@@ -67,7 +67,7 @@ export interface NoticeState {
 }
 
 // Limits for dragging notice around
-const bounds = [10, 100, 10, 10];
+const bounds = [20, 120, 10, 10];
 
 class NoticeComponent extends React.Component<NoticeProps, NoticeState> {
     countdownInterval: NodeJS.Timeout;

@@ -1,0 +1,26 @@
+{
+    "name": "__MSG_fullName__",
+    "short_name": "SponsorBlock",
+    "version": "6.1.7",
+    "default_locale": "en",
+    "description": "__MSG_Description__",
+    "homepage_url": "https://sponsor.ajay.app",
+    "icons": {
+        "16": "icons/IconSponsorBlocker16px.png",
+        "32": "icons/IconSponsorBlocker32px.png",
+        "64": "icons/IconSponsorBlocker64px.png",
+        "128": "icons/IconSponsorBlocker128px.png",
+        "256": "icons/IconSponsorBlocker256px.png",
+        "512": "icons/IconSponsorBlocker512px.png",
+        "1024": "icons/IconSponsorBlocker1024px.png"
+    },
+    "permissions": [
+        "storage",
+        "scripting",
+        "unlimitedStorage"
+    ],
+    "options_ui": {
+        "page": "options/options.html",
+        "open_in_tab": true
+    }
+}  

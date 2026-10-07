@@ -664,54 +664,54 @@ input:checked + .slider:before {
 
 
 
-/* Boilerplate CSS from https://ajay.app (edited) */
-
-.projectPreview {
-    position: relative;
-}
-
-.projectPreviewImage {
-    position: absolute;
-    left: -90px;
-    width: 80px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.projectPreviewImageLarge {
-    position: absolute;
-    left: -210px;
-    width: 200px;
-    top: 50%;
-    transform: translateY(-20%);
-}
-
-.projectPreviewImageLargeRight {
-    position: absolute;
-    right: -210px;
-    width: 200px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-#createdBy {
-    text-align: center;
-    margin: 8px 0 16px 0;
-    padding: 14px 16px 0 16px;
+.menubar-footer-container {
+    margin: 8px 14px 14px 14px;
+    padding-top: 12px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.footer-brand {
+#createdBy.github-link,
+.github-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    color: #a1a1aa;
     font-size: 13px;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.7);
-    letter-spacing: 0.5px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.footer-meta {
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.4);
-    margin-top: 2px;
+#createdBy.github-link:hover,
+.github-link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.github-icon {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.github-link:hover .github-icon {
+    transform: scale(1.1);
+    fill: #ffffff;
+}
+
+.github-text {
+    letter-spacing: 0.3px;
 }
 
 #title {
@@ -1067,12 +1067,9 @@ input[type="color"].categoryColorTextBox:disabled {
         height: 40px;
     }
     #createdBy {
-        margin: 10px 0 0 0;
+        margin: 10px auto 0 auto;
         height: unset;
-        width: 100%;
-    }
-    #createdBy > div {
-        display: inline-block;
+        width: fit-content;
     }
     #version {
         font-size: 10px;

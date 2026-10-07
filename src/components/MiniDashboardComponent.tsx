@@ -56,7 +56,7 @@ export const MiniDashboardComponent: React.FC<MiniDashboardProps> = ({
         <div className="sb-mini-dashboard-card" style={{
             width: "100%",
             boxSizing: "border-box",
-            borderRadius: "6px",
+            borderRadius: "12px",
             padding: "13px 15px",
             marginBottom: "16px",
             background: "rgba(255, 255, 255, 0.05)",
@@ -119,7 +119,7 @@ export const MiniDashboardComponent: React.FC<MiniDashboardProps> = ({
                 <div style={{
                     background: "rgba(0, 0, 0, 0.35)",
                     border: "1px solid rgba(255, 255, 255, 0.06)",
-                    borderRadius: "5px",
+                    borderRadius: "10px",
                     padding: "10px 8px",
                     textAlign: "center",
                     display: "flex",
@@ -160,7 +160,7 @@ export const MiniDashboardComponent: React.FC<MiniDashboardProps> = ({
                 <div style={{
                     background: "rgba(0, 0, 0, 0.35)",
                     border: "1px solid rgba(255, 255, 255, 0.06)",
-                    borderRadius: "5px",
+                    borderRadius: "10px",
                     padding: "10px 8px",
                     textAlign: "center",
                     display: "flex",
@@ -194,7 +194,7 @@ export const MiniDashboardComponent: React.FC<MiniDashboardProps> = ({
             <div style={{
                 background: "rgba(0, 0, 0, 0.25)",
                 border: "1px solid rgba(255, 255, 255, 0.06)",
-                borderRadius: "5px",
+                borderRadius: "10px",
                 padding: "8px 12px",
                 marginTop: "10px",
                 display: "flex",

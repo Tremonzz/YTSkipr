@@ -79,9 +79,11 @@ async function init() {
     }
 
     const donate = document.getElementById("sbDonate");
-    donate.addEventListener("click", () => Config.config.donateClicked = Config.config.donateClicked + 1);
-    if (!showDonationLink()) {
-        donate.classList.add("hidden");
+    if (donate) {
+        donate.addEventListener("click", () => Config.config.donateClicked = Config.config.donateClicked + 1);
+        if (!showDonationLink()) {
+            donate.classList.add("hidden");
+        }
     }
 
     // DeArrow promotion
@@ -89,18 +91,22 @@ async function init() {
         isDeArrowInstalled().then((installed) => {
             if (!installed) {
                 const deArrowPromotion = document.getElementById("deArrowPromotion");
-                deArrowPromotion.classList.remove("hidden");
+                if (deArrowPromotion) {
+                    deArrowPromotion.classList.remove("hidden");
 
-                deArrowPromotion.addEventListener("click", () => Config.config.showDeArrowPromotion = false);
+                    deArrowPromotion.addEventListener("click", () => Config.config.showDeArrowPromotion = false);
 
-                const closeButton = deArrowPromotion.querySelector(".close-button");
-                closeButton.addEventListener("click", (e) => {
-                    e.preventDefault();
-                    
-                    deArrowPromotion.classList.add("hidden");
-                    Config.config.showDeArrowPromotion = false;
-                    Config.config.showDeArrowInSettings = false;
-                });
+                    const closeButton = deArrowPromotion.querySelector(".close-button");
+                    if (closeButton) {
+                        closeButton.addEventListener("click", (e) => {
+                            e.preventDefault();
+                            
+                            deArrowPromotion.classList.add("hidden");
+                            Config.config.showDeArrowPromotion = false;
+                            Config.config.showDeArrowInSettings = false;
+                        });
+                    }
+                }
             }
         });
     }

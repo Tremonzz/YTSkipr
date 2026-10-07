@@ -2,7 +2,7 @@
 <!-- Link to specific tabs by using their ID in the URL like: options.html#keybinds -->
 
 <head>
-  <title>__MSG_Options__ - SponsorBlock</title>
+  <title>__MSG_Options__ - YTSkipr</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1" /> 
   <link rel="icon" href="../icons/IconSponsorBlocker32px.png" type="image/png">
@@ -19,8 +19,8 @@
 		<div id="menubar" class="center">
 
 			<div id="title" class="titleBar">
-				<img id="title-bar-logo" src="../icons/LogoSponsorBlocker256px.png" class="profilepic" alt="SponsorBlock logo"/>
-				SponsorBlock
+				<img id="title-bar-logo" src="../icons/LogoSponsorBlocker256px.png" class="profilepic" alt="YTSkipr logo"/>
+				<span class="titleBarText">YTSkipr</span>
 				<div id="version"></div>
 			</div>
 
@@ -47,12 +47,8 @@
 		</div>
 
 			<div id="createdBy" class="titleBar">
-				<div>
-					<img src="../icons/newprofilepic.jpg" height="30" class="profilepiccircle" alt="profile picture of creator"/>
-					__MSG_createdBy__ 
-					<a href="https://ajay.app">Ajay Ramachandran</a> 
-				</div>
-				<a href="https://sponsor.ajay.app/donate" target="_blank" rel="noopener" id="sbDonate">(__MSG_Donate__)</a>
+				<div class="footer-brand">YTSkipr</div>
+				<div class="footer-meta">Auto Skip & Sponsor Blocker</div>
 			</div>
 
 		</div>
@@ -63,21 +59,6 @@
 
 				<div id="category-type" data-type="react-CategoryChooserComponent">
 
-				</div>
-
-				<div id="deArrowPromotion" class="promotion-container hidden">
-					<a class="dearrow-link"
-                        href="https://dearrow.ajay.app"
-                        target="_blank"
-                        rel="noreferrer">
-                        <img src="/icons/dearrow.svg"/>
-
-                        <span class="promotion-description">
-                            __MSG_DeArrowPromotionMessage__
-                        </span>
-
-						<img src="/icons/close.png" class="close-button"/>
-                    </a>
 				</div>
 
 				<div data-type="react-AdvancedSkipOptionsComponent" class="hide-when-skip-profile"></div>
@@ -108,20 +89,6 @@
 					</div>
 	
 					<div class="small-description">__MSG_whatShowCategoryWithoutPermission__</div>
-				</div>
-
-				<div id="ytNeuterPromotion" class="promotion-container">
-					<a class="dearrow-link"
-                        href="https://github.com/mchangrh/yt-neuter/blob/main/docs/filters/sponsorblock.md#install"
-                        target="_blank"
-                        rel="noreferrer">
-
-                        <span class="promotion-description">
-                            __MSG_YtNeuterMessage__
-                        </span>
-                    </a>
-
-					<div class="small-description">__MSG_requiresUblock__</div>
 				</div>
 
 			</div>

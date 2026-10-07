@@ -78,8 +78,17 @@ export const MiniDashboardComponent: React.FC<MiniDashboardProps> = ({
                 marginBottom: "10px"
             }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "7px" }}>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="#f85149" style={{ display: "block" }}>
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
+                    <svg width="18" height="13" viewBox="0 0 120 84" fill="none" style={{ display: "block" }}>
+                        <defs>
+                            <linearGradient id="sbDashLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stopColor="#FF1A40" />
+                                <stop offset="50%" stopColor="#E11D48" />
+                                <stop offset="100%" stopColor="#9F1239" />
+                            </linearGradient>
+                        </defs>
+                        <rect x="6" y="6" width="108" height="72" rx="24" fill="url(#sbDashLogoGrad)" />
+                        <path d="M37 29 C35.5 28 33 29.2 33 31.2 L33 52.8 C33 54.8 35.5 56 37 55 L53 44.2 C54.5 43.2 54.5 40.8 53 39.8 Z" fill="#ffffff" />
+                        <path d="M57 29 C55.5 28 53 29.2 53 31.2 L53 52.8 C53 54.8 55.5 56 57 55 L73 44.2 C74.5 43.2 74.5 40.8 73 39.8 Z" fill="#ffffff" />
                     </svg>
                     <span style={{
                         fontSize: "11px",

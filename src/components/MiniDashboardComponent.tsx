@@ -210,7 +210,14 @@ export const MiniDashboardComponent: React.FC<MiniDashboardProps> = ({
                         <span style={{ color: "#34d399", fontWeight: 600 }}>
                             {segmentCount} {segmentCount === 1 ? "segmento" : "segmenti"}
                         </span>
-                        <span style={{ color: "rgba(255, 255, 255, 0.3)", margin: "0 5px" }}>•</span>
+                        <span style={{
+                            display: "inline-block",
+                            width: "3px",
+                            height: "3px",
+                            borderRadius: "50%",
+                            backgroundColor: "rgba(255, 255, 255, 0.4)",
+                            margin: "0 6px"
+                        }} />
                         <span style={{ color: "rgba(255, 255, 255, 0.9)", fontWeight: 500 }}>
                             {videoTimeFormatted} risparmiati
                         </span>

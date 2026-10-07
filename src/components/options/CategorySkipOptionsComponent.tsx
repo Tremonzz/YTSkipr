@@ -122,7 +122,7 @@ export function CategorySkipOptionsComponent(props: CategorySkipOptionsProps): R
             <tr id={props.category + "DescriptionRow"}
                 className={`small-description categoryTableDescription`}>
                     <td
-                        colSpan={2}>
+                        colSpan={4}>
                         {chrome.i18n.getMessage("category_" + props.category + "_description")}
                         {' '}
                         <a href={CompileConfig.wikiLinks[props.category]} target="_blank" rel="noreferrer">
@@ -220,7 +220,7 @@ export function ExtraOptionComponent({option, selectedConfigurationID}: {option:
 
     return (
         <tr key={option.configKey} className={`${option.dontShowOnCustomConfigs && selectedConfigurationID !== null ? "hidden" : ""}`}>
-            <td id={`${option.configKey}`} className="categoryExtraOptions">
+            <td id={`${option.configKey}`} className="categoryExtraOptions" colSpan={4}>
                 {
                     option.type === "toggle" ?
                         <ToggleOptionComponent 

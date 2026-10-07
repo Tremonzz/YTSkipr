@@ -131,7 +131,7 @@ export const PopupComponent = () => {
                     id="sponsorBlockPopupLogo"
                 />
                 <p className="u-mZ">
-                    SponsorBlock
+                    YTSkipr
                 </p>
             </header>
 

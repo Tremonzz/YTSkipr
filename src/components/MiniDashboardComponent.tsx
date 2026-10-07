@@ -97,7 +97,7 @@ export const MiniDashboardComponent: React.FC<MiniDashboardProps> = ({
                         textTransform: "uppercase",
                         color: "rgba(255, 255, 255, 0.9)"
                     }}>
-                        Statistiche SponsorBlock
+                        Statistiche YTSkipr
                     </span>
                 </div>
                 <span style={{

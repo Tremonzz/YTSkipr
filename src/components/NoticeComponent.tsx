@@ -175,7 +175,7 @@ class NoticeComponent extends React.Component<NoticeProps, NoticeState> {
                                     onClick={this.props.onMessageClick}
                                     style={this.props.onMessageClick ? { cursor: "pointer" } : undefined}>
                                     {/* Logo */}
-                                    {!this.props.hideLogo &&
+                                    {!this.props.hideLogo ?
                                         (
                                             !Config.config.prideTheme ?
                                                 <SbSvg
@@ -188,6 +188,10 @@ class NoticeComponent extends React.Component<NoticeProps, NoticeState> {
                                                     src={chrome.runtime.getURL("icons/sb-pride.png")}
                                                     className="sponsorSkipLogo sponsorSkipObject"/>
                                         )
+                                    :
+                                        <svg className="sbSkipPillIcon" fill="currentColor" viewBox="0 0 24 24" style={{ width: "12px", height: "12px", marginRight: "6px", display: "inline-block", verticalAlign: "middle", opacity: 0.85 }}>
+                                            <path d="M5.055 7.06C3.805 6.347 2.25 7.25 2.25 8.69v6.62c0 1.44 1.555 2.343 2.805 1.63l5.77-3.31c1.23-.705 1.23-2.555 0-3.26l-5.77-3.31zM13.055 7.06C11.805 6.347 10.25 7.25 10.25 8.69v6.62c0 1.44 1.555 2.343 2.805 1.63l5.77-3.31c1.23-.705 1.23-2.555 0-3.26l-5.77-3.31z" />
+                                        </svg>
                                     }
 
                                     <span id={"sponsorSkipMessage" + this.idSuffix}

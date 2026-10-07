@@ -102,15 +102,20 @@ class SkipNoticeComponent extends React.Component<SkipNoticeProps, SkipNoticeSta
         this.segments = props.segments;
         this.autoSkip = props.autoSkip;
         this.contentContainer = props.contentContainer;
+        const category = this.segments[0].category;
+        let categoryName = "sponsor";
+        if (category === "intro") categoryName = "intro";
+        else if (category === "outro") categoryName = "outro";
+        else if (category === "selfpromo") categoryName = "autopromozione";
+        else if (category !== "sponsor") categoryName = (shortCategoryName(category) || category).toLowerCase();
+
         let noticeTitle = "";
         if (this.props.voteNotice) {
             noticeTitle = getVoteText(this.segments);
-        } else if (this.props.upcomingNotice) {
-            const categoryName = shortCategoryName(this.segments[0].category);
-            const skipWord = chrome.i18n.getMessage("skip") || "Salta";
-            noticeTitle = `${skipWord} ${categoryName}`;
+        } else if (this.props.autoSkip && !this.props.startReskip && !this.props.upcomingNotice) {
+            noticeTitle = `${categoryName.charAt(0).toUpperCase() + categoryName.slice(1)} saltato`;
         } else {
-            noticeTitle = getSkippingText(this.segments, this.props.autoSkip);
+            noticeTitle = `Salta ${categoryName}`;
         }
 
         const previousSkipNotices = document.querySelectorAll(".sponsorSkipNoticeParent:not(.sponsorSkipUpcomingNotice)");
@@ -185,11 +190,10 @@ class SkipNoticeComponent extends React.Component<SkipNoticeProps, SkipNoticeSta
             noticeStyle.transform = "scale(0.8) translate(10%, 10%)";
         }
 
-        const firstColumn = this.getSkipButton(0);
-        const onMessageClick = this.props.upcomingNotice ? () => {
+        const onMessageClick = () => {
             this.reskip(0, 0, true);
             this.closeListener();
-        } : undefined;
+        };
 
         return (
             <NoticeComponent 
@@ -202,18 +206,18 @@ class SkipNoticeComponent extends React.Component<SkipNoticeProps, SkipNoticeSta
                 fadeOut={!this.props.upcomingNotice}
                 startFaded={Config.config.noticeVisibilityMode >= NoticeVisibilityMode.FadedForAll
                     || (Config.config.noticeVisibilityMode >= NoticeVisibilityMode.FadedForAutoSkip && this.autoSkip)}
-                timed={true}
-                maxCountdownTime={this.state.maxCountdownTime}
+                timed={false}
                 style={noticeStyle}
                 biggerCloseButton={this.contentContainer().onMobileYouTube}
                 ref={this.noticeRef}
                 closeListener={() => this.closeListener()}
-                smaller={this.state.smaller}
-                logoFill={Config.config.barTypes[this.segments[0].category].color}
+                smaller={true}
+                hideLogo={true}
+                hideRightInfo={true}
+                firstColumn={null}
+                bottomRow={null}
                 limitWidth={true}
-                firstColumn={firstColumn}
                 dontPauseCountdown={!!this.props.upcomingNotice}
-                bottomRow={[...this.getMessageBoxes(), ...this.getBottomRow() ]}
                 extraClass={this.props.upcomingNotice ? "sponsorSkipUpcomingNotice" : ""}
                 onMouseEnter={() => this.onMouseEnter() } >
             </NoticeComponent>
@@ -448,11 +452,7 @@ class SkipNoticeComponent extends React.Component<SkipNoticeProps, SkipNoticeSta
     }
 
     onMouseEnter(): void {
-        if (this.state.smaller && !this.props.upcomingNotice) {
-            this.setState({
-                smaller: false
-            });
-        }
+        // Keep single minimal pill on hover
     }
 
     getMessageBoxes(): JSX.Element[] {

@@ -67,6 +67,7 @@ export const PopupComponent = () => {
     const [extensionEnabled, setExtensionEnabled] = React.useState(!Config.config!.disableSkipping);
     const [showForceChannelCheckWarning, setShowForceChannelCheckWarning] = React.useState(false);
     const [showNoticeButton, setShowNoticeButton] = React.useState(Config.config!.dontShowNotice);
+    const [skipProfileMenuOpen, setSkipProfileMenuOpen] = React.useState(false);
 
     const [currentTime, setCurrentTime] = React.useState<number>(0);
     const [segments, setSegments] = React.useState<SponsorTime[]>([]);
@@ -173,6 +174,8 @@ export const PopupComponent = () => {
                 <div className="sb-action-chips">
                     <SkipProfileButton
                         videoID={videoID}
+                        menuOpen={skipProfileMenuOpen}
+                        setMenuOpen={setSkipProfileMenuOpen}
                         setShowForceChannelCheckWarning={setShowForceChannelCheckWarning}
                     />
                     <button
@@ -189,6 +192,11 @@ export const PopupComponent = () => {
                         <span>{chrome.i18n.getMessage("Options")}</span>
                     </button>
                 </div>
+
+                {/* Whitelist / Skip Profile Menu expandable panel */}
+                {videoID && (
+                    <SkipProfileMenu open={skipProfileMenuOpen} videoID={videoID} />
+                )}
             </div>
 
             {
@@ -382,17 +390,21 @@ window.addEventListener("message", async (e): Promise<void> => {
     }
 });
 
-function SkipProfileButton(props: {videoID: string | null; setShowForceChannelCheckWarning: (v: boolean) => void}): JSX.Element {
-    const [menuOpen, setMenuOpen] = React.useState(false);
+function SkipProfileButton(props: {
+    videoID: string | null;
+    menuOpen: boolean;
+    setMenuOpen: (v: boolean) => void;
+    setShowForceChannelCheckWarning: (v: boolean) => void;
+}): JSX.Element {
     const channelSkipProfileSet = getSkipProfileIDForChannel() !== null;
     const skipProfileSet = getSkipProfileID() !== null;
 
     React.useEffect(() => {
-        setMenuOpen(false);
+        props.setMenuOpen(false);
     }, [props.videoID]);
 
     let labelText = "Consenti Canale";
-    if (menuOpen) {
+    if (props.menuOpen) {
         labelText = "Chiudi";
     } else if (channelSkipProfileSet) {
         labelText = "Canale Modificato";
@@ -401,33 +413,25 @@ function SkipProfileButton(props: {videoID: string | null; setShowForceChannelCh
     }
 
     return (
-        <div style={{ position: "relative" }}>
-            <button
-                id="skipProfileButton" 
-                className={`sb-action-chip ${!props.videoID ? "disabled" : ""}`}
-                type="button"
-                style={{ width: "100%", boxSizing: "border-box" }}
-                title={chrome.i18n.getMessage("addChannelToSkipProfile")}
-                onClick={() => {
-                    if (!props.videoID) return;
-                    if (menuOpen && !Config.config.forceChannelCheck && getSkipProfileID() !== null) {
-                        props.setShowForceChannelCheckWarning(true);
-                    }
+        <button
+            id="skipProfileButton" 
+            className={`sb-action-chip ${props.menuOpen ? "active" : ""} ${!props.videoID ? "disabled" : ""}`}
+            type="button"
+            title={chrome.i18n.getMessage("addChannelToSkipProfile")}
+            onClick={() => {
+                if (!props.videoID) return;
+                if (props.menuOpen && !Config.config.forceChannelCheck && getSkipProfileID() !== null) {
+                    props.setShowForceChannelCheckWarning(true);
+                }
 
-                    setMenuOpen(!menuOpen);
-                }}
-            >
-                <svg viewBox="0 0 24 24" width="14" height="14" className={"SBWhitelistIcon " + (menuOpen ? "rotated" : "")}>
-                    <path d="M24 10H14V0h-4v10H0v4h10v10h4V14h10z" />
-                </svg>
-                <span>{labelText}</span>
-            </button>
-
-            {
-                props.videoID &&
-                <SkipProfileMenu open={menuOpen} videoID={props.videoID} />
-            }
-        </div>
+                props.setMenuOpen(!props.menuOpen);
+            }}
+        >
+            <svg viewBox="0 0 24 24" width="14" height="14" className={"SBWhitelistIcon " + (props.menuOpen ? "rotated" : "")}>
+                <path d="M24 10H14V0h-4v10H0v4h10v10h4V14h10z" />
+            </svg>
+            <span>{labelText}</span>
+        </button>
     );
 }
 
@@ -514,6 +518,12 @@ function SkipProfileMenu(props: {open: boolean; videoID: string}): JSX.Element {
                         label: chrome.i18n.getMessage("CreateNewConfiguration")
                     }])}
                 />
+
+                {configID === null && (
+                    <div className="sb-skip-profile-hint">
+                        {chrome.i18n.getMessage("selectASkipProfileFirst") || "Seleziona prima un profilo di salto"}
+                    </div>
+                )}
 
                 <SkipProfileRadioButtons
                     selected={selectedSkipProfileAction}

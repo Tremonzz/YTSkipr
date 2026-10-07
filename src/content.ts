@@ -21,6 +21,7 @@ import SkipNotice from "./render/SkipNotice";
 import SkipNoticeComponent from "./components/SkipNoticeComponent";
 import UpcomingNotice from "./render/UpcomingNotice";
 import SubmissionNotice from "./render/SubmissionNotice";
+import MiniDashboard from "./render/MiniDashboard";
 import { Message, MessageResponse, VoteResponse } from "./messageTypes";
 import { SkipButtonControlBar } from "./js-components/skipButtonControlBar";
 import { getStartTimeFromUrl } from "./utils/urlParser";
@@ -58,6 +59,15 @@ import { FetchResponse, logRequest } from "../maze-utils/src/background-request-
 cleanPage();
 
 const utils = new Utils();
+const miniDashboard = new MiniDashboard();
+
+function updateMiniDashboard(): void {
+    if (onVideoPage() && !isOnMobileYouTube()) {
+        miniDashboard.update(sponsorTimes || []);
+    } else {
+        miniDashboard.destroy();
+    }
+}
 
 utils.wait(() => Config.isReady(), 5000, 10).then(() => {
     // Hack to get the CSS loaded on permission-based sites (Invidious)
@@ -506,6 +516,11 @@ function videoIDChange(): void {
         setTimeout(checkPreviewbarState, 1000);
         setTimeout(checkPreviewbarState, 3000);
     }
+
+    updateMiniDashboard();
+    utils.wait(() => document.querySelector("#secondary-inner") !== null, 15000, 500).then(() => {
+        updateMiniDashboard();
+    }).catch(() => {});
 }
 
 function handleMobileControlsMutations(): void {
@@ -1289,6 +1304,8 @@ function notifyPopupOfSegments(): void {
         channelAuthor: getChannelIDInfo().author,
         currentTabSkipProfileID: getSkipProfileIDForTab()
     });
+
+    updateMiniDashboard();
 }
 
 function importExistingChapters(wait: boolean) {
@@ -1754,6 +1771,10 @@ function sendTelemetryAndCount(skippingSegments: SponsorTime[], secondsSkipped: 
                 .catch(e => console.warn("[SB] Caught error while attempting to log segment skip", e));
         }
     }
+
+    if (counted) {
+        updateMiniDashboard();
+    }
 }
 
 //skip from the start time to the end time for a certain index sponsor time
@@ -2196,84 +2217,10 @@ function updateSponsorTimesSubmitting(getFromConfig = true) {
 }
 
 function openInfoMenu() {
-    if (document.getElementById("sponsorBlockPopupContainer") != null) {
-        //it's already added
-        return;
-    }
-
-    popupInitialised = false;
-
-    //hide info button
-    if (playerButtons.info) playerButtons.info.button.style.display = "none";
-
-    const popup = document.createElement("div");
-    popup.id = "sponsorBlockPopupContainer";
-
-    const frame = document.createElement("iframe");
-    frame.allow = "clipboard-write";
-    frame.width = "374";
-    frame.height = "500";
-    frame.style.borderRadius = "12px";
-    frame.addEventListener("load", async () => {
-        frame.contentWindow.postMessage("", "*");
-
-        // To support userstyles applying to the popup
-        const stylusStyle = document.querySelector(".stylus");
-        if (stylusStyle) {
-            frame.contentWindow.postMessage({
-                type: "style",
-                css: stylusStyle.textContent
-            }, "*");
-        }
-
-        const enhancerStyle = document.getElementById("efyt-theme");
-        if (enhancerStyle) {
-            const enhancerStyleVariables = document.getElementById("efyt-theme-variables");
-            if (enhancerStyleVariables) {
-                const enhancerCss = await fetch(enhancerStyle.getAttribute("href")).then((response) => response.text());
-                const enhancerVariablesCss = await fetch(enhancerStyleVariables.getAttribute("href")).then((response) => response.text());
-
-                if (enhancerCss && enhancerVariablesCss) {
-                    frame.contentWindow.postMessage({
-                        type: "style",
-                        // Image needs needs to reference the full url now
-                        css: enhancerCss.replace("./images/youtube-deep-dark/IconSponsorBlocker256px.png",
-                            "https://raw.githubusercontent.com/RaitaroH/YouTube-DeepDark/master/YT_Images/IconSponsorBlocker256px.png")
-                            + enhancerVariablesCss
-                    }, "*");
-                }
-            }
-        }
-    });
-    frame.src = chrome.runtime.getURL("popup.html");
-    popup.appendChild(frame);
-
-    const elemHasChild = (elements: NodeListOf<HTMLElement>): Element => {
-        let parentNode: Element;
-        for (const node of elements) {
-            if (node.firstElementChild !== null) {
-                parentNode = node;
-            }
-        }
-        return parentNode
-    }
-
-    const parentNodeOptions = [{
-        // YouTube
-        selector: "#secondary-inner",
-        hasChildCheck: true
-    }, {
-        // old youtube theme
-        selector: "#watch7-sidebar-contents",
-    }];
-    for (const option of parentNodeOptions) {
-        const allElements = document.querySelectorAll(option.selector) as NodeListOf<HTMLElement>;
-        const el = option.hasChildCheck ? elemHasChild(allElements) : allElements[0];
-
-        if (el) {
-            if (option.hasChildCheck) el.insertBefore(popup, el.firstChild);
-            break;
-        }
+    updateMiniDashboard();
+    const container = document.getElementById("sb-mini-dashboard-container");
+    if (container) {
+        container.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
 }
 

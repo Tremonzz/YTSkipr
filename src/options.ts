@@ -197,9 +197,9 @@ async function init() {
                             break;
                         case "showDonationLink":
                             if (checkbox.checked)
-                                document.getElementById("sbDonate").classList.add("hidden");
+                                document.getElementById("sbDonate")?.classList.add("hidden");
                             else
-                                document.getElementById("sbDonate").classList.remove("hidden");
+                                document.getElementById("sbDonate")?.classList.remove("hidden");
                             break;
                         case "darkMode":
                             if (checkbox.checked) {
@@ -666,9 +666,10 @@ async function setTextOption(option: string, element: HTMLElement, value: string
 
                     if (optionType !== "local" && newConfig.supportInvidious) {
                         const checkbox = <HTMLInputElement> document.querySelector("#support-invidious > div > label > input");
-
-                        checkbox.checked = true;
-                        await invidiousOnClick(checkbox, "supportInvidious");
+                        if (checkbox) {
+                            checkbox.checked = true;
+                            await invidiousOnClick(checkbox, "supportInvidious");
+                        }
                     }
 
                     setTimeout(() => window.location.reload(), 200);

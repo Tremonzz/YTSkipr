@@ -1,7 +1,7 @@
 {
-  "name": "sponsorblock",
-  "version": "1.0.0",
-  "description": "",
+  "name": "ytskipr",
+  "version": "6.2.0",
+  "description": "Modern, sleek YouTube sponsor skipping extension",
   "main": "background.js",
   "dependencies": {
     "content-scripts-register-polyfill": "^4.0.2",

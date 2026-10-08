@@ -106,7 +106,7 @@
   }
   ],
   "action": {
-    "default_title": "SponsorBlock",
+    "default_title": "YTSkipr",
     "default_popup": "popup.html",
     "default_icon": {
         "16": "icons/IconSponsorBlocker16px.png",

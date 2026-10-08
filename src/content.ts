@@ -2532,6 +2532,8 @@ function hotkeyListener(e: KeyboardEvent): void {
         || document.activeElement?.id?.toLowerCase()?.match(/editable|input/))
             && document.hasFocus()) return;
 
+    if (!Config?.config) return;
+
     const key: Keybind = {
         key: e.key,
         code: e.code,
@@ -2580,7 +2582,6 @@ function hotkeyListener(e: KeyboardEvent): void {
         return;
     } else if (keybindEquals(key, openSubmissionMenuKey)) {
         e.preventDefault();
-
         openSubmissionMenu();
         return;
     } else if (keybindEquals(key, previewKey)) {
@@ -2608,6 +2609,8 @@ function hotkeyPropagationListener(e: KeyboardEvent): void {
         || (document.activeElement as HTMLElement)?.isContentEditable
         || document.activeElement?.id?.toLowerCase()?.match(/editable|input/))
             && document.hasFocus()) return;
+
+    if (!Config?.config) return;
 
     const key: Keybind = {
         key: e.key,

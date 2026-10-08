@@ -1935,46 +1935,7 @@ function reskipSponsorTime(segment: SponsorTime, forceSeek = false) {
 }
 
 function createButton(baseID: string, title: string, callback: () => void, imageName: string, isDraggable = false): HTMLElement {
-    const existingElement = document.getElementById(baseID + "Button");
-    if (existingElement !== null) return existingElement;
-
-    // Button HTML
-    const newButton = document.createElement("button");
-    newButton.draggable = isDraggable;
-    newButton.id = baseID + "Button";
-    newButton.classList.add("playerButton");
-    newButton.classList.add("ytp-button");
-    if (Config.config.prideTheme) newButton.classList.add("prideTheme");
-    if (isOnYTTV()) {
-        // Some style needs to be set here, but the numbers don't matter 
-        newButton.setAttribute("style", "width: 40px; height: 40px");
-    }
-    newButton.setAttribute("title", chrome.i18n.getMessage(title));
-    newButton.addEventListener("click", () => {
-        callback();
-    });
-
-    // Image HTML
-    const newButtonImage = document.createElement("img");
-    newButton.draggable = isDraggable;
-    newButtonImage.id = baseID + "Image";
-    newButtonImage.className = "playerButtonImage";
-    newButtonImage.src = chrome.runtime.getURL("icons/" + imageName);
-
-    // Append image to button
-    newButton.appendChild(newButtonImage);
-
-    // Add the button to player
-    if (controls) controls.prepend(newButton);
-
-    // Store the elements to prevent unnecessary querying
-    playerButtons[baseID] = {
-        button: newButton,
-        image: newButtonImage,
-        setupListener: false
-    };
-
-    return newButton;
+    return null;
 }
 
 function shouldAutoSkip(segment: SponsorTime): boolean {
@@ -2006,82 +1967,19 @@ function isLoopedChapter(segment: SponsorTime): boolean{
         && segment.segment[0] === loopedChapter.segment[0] && segment.segment[1] === loopedChapter.segment[1];
 }
 
-/** Creates any missing buttons on the YouTube player if possible. */
+/** Player controls buttons are disabled: remove any existing buttons from the DOM */
 async function createButtons(): Promise<void> {
-    controls = await utils.wait(getControls).catch();
-
-    // Add button if does not already exist in html
-    createButton("startSegment", "sponsorStart", () => startOrEndTimingNewSegment(), "PlayerStartIconSponsorBlocker.svg");
-    createButton("cancelSegment", "sponsorCancel", () => cancelCreatingSegment(), "PlayerCancelSegmentIconSponsorBlocker.svg");
-    createButton("delete", "clearTimes", () => clearSponsorTimes(), "PlayerDeleteIconSponsorBlocker.svg");
-    createButton("submit", "OpenSubmissionMenu", () => openSubmissionMenu(), "PlayerUploadIconSponsorBlocker.svg");
-    createButton("info", "openPopup", () => openInfoMenu(), "PlayerInfoIconSponsorBlocker.svg");
-
-    const controlsContainer = getControls();
-    if (Config.config.autoHideInfoButton && !isOnInvidious() && controlsContainer
-            && playerButtons["info"]?.button && !controlsWithEventListeners.includes(controlsContainer)) {
-        controlsWithEventListeners.push(controlsContainer);
-
-        AnimationUtils.setupAutoHideAnimation(playerButtons["info"].button, controlsContainer);
-    }
+    document.querySelectorAll(".playerButton").forEach((el) => el.remove());
 }
 
-/** Creates any missing buttons on the player and updates their visiblity. */
+/** Player controls are disabled: ensure any remaining buttons are removed. */
 async function updateVisibilityOfPlayerControlsButton(): Promise<void> {
-    // Not on a proper video yet
-    if (!getVideoID() || isOnMobileYouTube()) return;
-
-    await createButtons();
-
-    updateEditButtonsOnPlayer();
-
-    // Don't show the info button on embeds
-    if (Config.config.hideInfoButtonPlayerControls || document.URL.includes("/embed/") || isOnInvidious() || isOnYTTV()
-        || document.getElementById("sponsorBlockPopupContainer") != null) {
-        playerButtons.info.button.style.display = "none";
-    } else {
-        playerButtons.info.button.style.removeProperty("display");
-    }
+    document.querySelectorAll(".playerButton").forEach((el) => el.remove());
 }
 
 /** Updates the visibility of buttons on the player related to creating segments. */
 function updateEditButtonsOnPlayer(): void {
-    // Don't try to update the buttons if we aren't on a YouTube video page
-    if (!getVideoID() || isOnMobileYouTube()) return;
-
-    const buttonsEnabled = !(Config.config.hideVideoPlayerControls || isOnInvidious());
-
-    let creatingSegment = false;
-    let submitButtonVisible = false;
-    let deleteButtonVisible = false;
-
-    // Only check if buttons should be visible if they're enabled
-    if (buttonsEnabled) {
-        creatingSegment = isSegmentCreationInProgress();
-
-        // Show only if there are any segments to submit
-        submitButtonVisible = sponsorTimesSubmitting.length > 0;
-
-        // Show only if there are any segments to delete
-        deleteButtonVisible = sponsorTimesSubmitting.length > 1 || (sponsorTimesSubmitting.length > 0 && !creatingSegment);
-    }
-
-    // Update the elements
-    playerButtons.startSegment.button.style.display = buttonsEnabled ? "unset" : "none";
-    playerButtons.cancelSegment.button.style.display = buttonsEnabled && creatingSegment ? "unset" : "none";
-
-    if (buttonsEnabled) {
-        if (creatingSegment) {
-            playerButtons.startSegment.image.src = chrome.runtime.getURL("icons/PlayerStopIconSponsorBlocker.svg");
-            playerButtons.startSegment.button.setAttribute("title", chrome.i18n.getMessage("sponsorEnd"));
-        } else {
-            playerButtons.startSegment.image.src = chrome.runtime.getURL("icons/PlayerStartIconSponsorBlocker.svg");
-            playerButtons.startSegment.button.setAttribute("title", chrome.i18n.getMessage("sponsorStart"));
-        }
-    }
-
-    playerButtons.submit.button.style.display = submitButtonVisible && !Config.config.hideUploadButtonPlayerControls ? "unset" : "none";
-    playerButtons.delete.button.style.display = deleteButtonVisible && !Config.config.hideDeleteButtonPlayerControls ? "unset" : "none";
+    document.querySelectorAll(".playerButton").forEach((el) => el.remove());
 }
 
 /**
@@ -2424,9 +2322,13 @@ async function sendSubmitMessage(): Promise<boolean> {
         return false;
     }
 
-    // Add loading animation
-    playerButtons.submit.image.src = chrome.runtime.getURL("icons/PlayerUploadIconSponsorBlocker.svg");
-    const stopAnimation = AnimationUtils.applyLoadingAnimation(playerButtons.submit.button, 1, () => updateEditButtonsOnPlayer());
+    // Add loading animation if submit button exists
+    if (playerButtons.submit?.image) {
+        playerButtons.submit.image.src = chrome.runtime.getURL("icons/PlayerUploadIconSponsorBlocker.svg");
+    }
+    const stopAnimation = playerButtons.submit?.button
+        ? AnimationUtils.applyLoadingAnimation(playerButtons.submit.button, 1, () => updateEditButtonsOnPlayer())
+        : () => {};
 
     //check if a sponsor exceeds the duration of the video
     for (let i = 0; i < sponsorTimesSubmitting.length; i++) {
@@ -2464,8 +2366,10 @@ async function sendSubmitMessage(): Promise<boolean> {
     } catch (e) {
         console.error("[SB] Caught error while attempting to submit segments", e);
         // Show that the upload failed
-        playerButtons.submit.button.style.animation = "unset";
-        playerButtons.submit.image.src = chrome.runtime.getURL("icons/PlayerUploadFailedIconSponsorBlocker.svg");
+        if (playerButtons.submit?.button) {
+            playerButtons.submit.button.style.animation = "unset";
+            playerButtons.submit.image.src = chrome.runtime.getURL("icons/PlayerUploadFailedIconSponsorBlocker.svg");
+        }
         alert(formatJSErrorMessage(e));
         return false;
     }
@@ -2507,8 +2411,10 @@ async function sendSubmitMessage(): Promise<boolean> {
         return true;
     } else {
         // Show that the upload failed
-        playerButtons.submit.button.style.animation = "unset";
-        playerButtons.submit.image.src = chrome.runtime.getURL("icons/PlayerUploadFailedIconSponsorBlocker.svg");
+        if (playerButtons.submit?.button) {
+            playerButtons.submit.button.style.animation = "unset";
+            playerButtons.submit.image.src = chrome.runtime.getURL("icons/PlayerUploadFailedIconSponsorBlocker.svg");
+        }
 
         if (response.status === 403 && response.responseText.startsWith("Submission rejected due to a tip from a moderator.")) {
             openWarningDialog(skipNoticeContentContainer);

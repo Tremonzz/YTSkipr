@@ -394,7 +394,7 @@ const syncDefaults = {
     manualSkipOnFullVideo: false,
     trackViewCount: true,
     trackViewCountInPrivate: true,
-    trackDownvotes: true,
+    trackDownvotes: false,
     trackDownvotesInPrivate: false,
     dontShowNotice: false,
     showUpcomingNotice: false,

@@ -46,10 +46,11 @@ class UpcomingNotice {
     }
 
     close(): void {
+        if (this.closed) return;
+        this.closed = true;
+
         this.root.unmount();
         this.noticeElement.remove();
-
-        this.closed = true;
     }
 
     sameNotice(segments: SponsorTime[]): boolean {

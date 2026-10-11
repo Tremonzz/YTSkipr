@@ -65,13 +65,21 @@ class SkipNotice {
         });
     }
 
+    closed = false;
+
     close(): void {
+        if (this.closed) return;
+        this.closed = true;
+
         this.root.unmount();
 
         this.noticeElement.remove();
 
         const skipNotices = this.contentContainer().skipNotices;
-        skipNotices.splice(skipNotices.indexOf(this), 1);
+        const index = skipNotices.indexOf(this);
+        if (index !== -1) {
+            skipNotices.splice(index, 1);
+        }
     }
 
     toggleSkip(): void {

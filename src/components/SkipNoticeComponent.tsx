@@ -191,7 +191,11 @@ class SkipNoticeComponent extends React.Component<SkipNoticeProps, SkipNoticeSta
         }
 
         const onMessageClick = () => {
-            this.reskip(0, 0, true);
+            const currentTime = getCurrentTime();
+            const segment = this.segments[0];
+            if (segment && (currentTime === null || currentTime === undefined || currentTime < segment.segment[1])) {
+                this.reskip(0, 0, true);
+            }
             this.closeListener();
         };
 
@@ -206,7 +210,8 @@ class SkipNoticeComponent extends React.Component<SkipNoticeProps, SkipNoticeSta
                 fadeOut={!this.props.upcomingNotice}
                 startFaded={Config.config.noticeVisibilityMode >= NoticeVisibilityMode.FadedForAll
                     || (Config.config.noticeVisibilityMode >= NoticeVisibilityMode.FadedForAutoSkip && this.autoSkip)}
-                timed={false}
+                timed={true}
+                maxCountdownTime={this.state.maxCountdownTime}
                 style={noticeStyle}
                 biggerCloseButton={this.contentContainer().onMobileYouTube}
                 ref={this.noticeRef}
@@ -647,8 +652,14 @@ class SkipNoticeComponent extends React.Component<SkipNoticeProps, SkipNoticeSta
     }
 
     reskip(buttonIndex: number, index: number, forceSeek: boolean): void {
-        this.contentContainer().reskipSponsorTime(this.segments[index], forceSeek);
-        this.reskippedMode(buttonIndex);
+        const currentTime = getCurrentTime();
+        const segment = this.segments[index];
+        if (segment && (currentTime === null || currentTime === undefined || currentTime < segment.segment[1])) {
+            this.contentContainer().reskipSponsorTime(this.segments[index], forceSeek);
+            this.reskippedMode(buttonIndex);
+        } else {
+            this.closeListener();
+        }
     }
 
     reskippedMode(buttonIndex: number): void {

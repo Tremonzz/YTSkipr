@@ -666,6 +666,7 @@ function cancelSponsorSchedule(): void {
  */
 async function startSponsorSchedule(includeIntersectingSegments = false, currentTime?: number, includeNonIntersectingSegments = true): Promise<void> {
     cancelSponsorSchedule();
+    checkAndCleanExpiredNotices();
 
     // Don't skip if advert playing and reset last checked time
     if (getIsAdPlaying()) {
@@ -848,8 +849,8 @@ async function startSponsorSchedule(includeIntersectingSegments = false, current
             if (currentSkipSchedule) clearTimeout(currentSkipSchedule);
             currentSkipSchedule = setTimeout(skippingFunction, offsetDelayTime);
 
-            // Show the notice only if the segment hasn't already started
-            if (Config.config.showUpcomingNotice && getCurrentTime() < skippingSegments[0].segment[0] 
+            // Show the notice only if the segment is at least 1 second away
+            if (Config.config.showUpcomingNotice && getCurrentTime() < skippingSegments[0].segment[0] - 1 
                     && !sponsorTimesSubmitting?.some((segment) => segment.segment === currentSkip.segment)
                     && [ActionType.Skip, ActionType.Mute].includes(skippingSegments[0].actionType)
                     && getCategorySelection(skippingSegments[0])?.option > CategorySkipOption.ShowOverlay
@@ -1040,6 +1041,7 @@ function setupVideoListeners(video: HTMLVideoElement) {
         
         const seekingListener = () => {
             lastKnownVideoTime.fromPause = false;
+            checkAndCleanExpiredNotices();
 
             if (!video.paused){
                 // Reset lastCheckVideoTime
@@ -1064,6 +1066,11 @@ function setupVideoListeners(video: HTMLVideoElement) {
             }
         };
         video.addEventListener('seeking', seekingListener);
+
+        const timeupdateListener = () => {
+            checkAndCleanExpiredNotices();
+        };
+        video.addEventListener('timeupdate', timeupdateListener);
         
         const stoppedPlayback = () => {
             // Reset lastCheckVideoTime
@@ -1117,6 +1124,7 @@ function setupVideoListeners(video: HTMLVideoElement) {
                 video.removeEventListener('play', playListener);
                 video.removeEventListener('playing', playingListener);
                 video.removeEventListener('seeking', seekingListener);
+                video.removeEventListener('timeupdate', timeupdateListener);
                 video.removeEventListener('ratechange', rateChangeListener);
                 video.removeEventListener('videoSpeed_ratechange', rateChangeListener);
                 video.removeEventListener('pause', pauseListener);
@@ -1895,7 +1903,36 @@ function createSkipNotice(skippingSegments: SponsorTime[], autoSkip: boolean, un
     activeSkipKeybindElement = newSkipNotice;
 }
 
+function checkAndCleanExpiredNotices(): void {
+    const currentTime = getCurrentTime();
+    if (currentTime === null || currentTime === undefined) return;
+
+    if (upcomingNotice && !upcomingNotice.closed) {
+        const seg = upcomingNotice.segments?.[0];
+        if (seg && currentTime >= seg.segment[0] - 1) {
+            upcomingNotice.close();
+            upcomingNotice = null;
+        }
+    }
+
+    if (skipNotices && skipNotices.length > 0) {
+        for (let i = skipNotices.length - 1; i >= 0; i--) {
+            const notice = skipNotices[i];
+            const maxEnd = Math.max(...notice.segments.map((s) => s.segment[1]));
+            if (currentTime >= maxEnd) {
+                notice.close();
+            }
+        }
+    }
+}
+
 function createUpcomingNotice(skippingSegments: SponsorTime[], timeLeft: number, autoSkip: boolean): void {
+    const currentTime = getCurrentTime();
+    const segmentStart = skippingSegments[0]?.segment?.[0];
+    if (currentTime !== null && segmentStart !== undefined && currentTime >= segmentStart - 1) {
+        return;
+    }
+
     if (upcomingNotice 
             && !upcomingNotice.closed
             && upcomingNotice.sameNotice(skippingSegments)) {
@@ -1903,7 +1940,17 @@ function createUpcomingNotice(skippingSegments: SponsorTime[], timeLeft: number,
     }
 
     upcomingNotice?.close();
-    upcomingNotice = new UpcomingNotice(skippingSegments, skipNoticeContentContainer, timeLeft / 1000, autoSkip);
+
+    const playbackRate = getVideo()?.playbackRate || 1;
+    const timeUntilClose = segmentStart !== undefined && currentTime !== null
+        ? Math.max(0, (segmentStart - 1 - currentTime) / playbackRate)
+        : Math.max(0, (timeLeft / 1000) - 1);
+
+    if (timeUntilClose <= 0) {
+        return;
+    }
+
+    upcomingNotice = new UpcomingNotice(skippingSegments, skipNoticeContentContainer, timeUntilClose, autoSkip);
 }
 
 function unskipSponsorTime(segment: SponsorTime, unskipTime: number = null, forceSeek = false, voteNotice = false) {
@@ -1920,6 +1967,8 @@ function unskipSponsorTime(segment: SponsorTime, unskipTime: number = null, forc
 }
 
 function reskipSponsorTime(segment: SponsorTime, forceSeek = false) {
+    if (getCurrentTime() >= segment.segment[1]) return;
+
     if (segment.actionType === ActionType.Mute && !forceSeek) {
         getVideo().muted = true;
         videoMuted = true;

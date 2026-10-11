@@ -8,6 +8,7 @@
     "icons": {
         "16": "icons/IconSponsorBlocker16px.png",
         "32": "icons/IconSponsorBlocker32px.png",
+        "48": "icons/IconSponsorBlocker48px.png",
         "64": "icons/IconSponsorBlocker64px.png",
         "128": "icons/IconSponsorBlocker128px.png",
         "256": "icons/IconSponsorBlocker256px.png",

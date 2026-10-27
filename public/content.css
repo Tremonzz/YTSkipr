@@ -296,8 +296,8 @@ div:hover > .sponsorBlockChapterBar {
 
 .sponsorSkipNoticeParent {
     position: absolute;
-	bottom: 120px;
-	right: 20px;
+	bottom: 84px !important;
+	right: 24px !important;
 	min-width: unset !important;
 	max-width: unset !important;
 	width: max-content !important;
@@ -306,6 +306,26 @@ div:hover > .sponsorBlockChapterBar {
 	align-items: center !important;
 	z-index: 1000;
 	pointer-events: auto;
+}
+
+/* In fullscreen or when YouTube quick-actions bar is present, elevate above it */
+.ytp-fullscreen .sponsorSkipNoticeParent,
+#movie_player.ytp-delhi-modern .sponsorSkipNoticeParent,
+#movie_player:has(.ytp-fullscreen-quick-actions) .sponsorSkipNoticeParent,
+#movie_player:has(.ytp-quick-actions) .sponsorSkipNoticeParent {
+	bottom: 142px !important;
+	right: 24px !important;
+}
+
+.sponsorSkipNoticeParent.secondSkipNotice {
+	bottom: 138px !important;
+}
+
+.ytp-fullscreen .sponsorSkipNoticeParent.secondSkipNotice,
+#movie_player.ytp-delhi-modern .sponsorSkipNoticeParent.secondSkipNotice,
+#movie_player:has(.ytp-fullscreen-quick-actions) .sponsorSkipNoticeParent.secondSkipNotice,
+#movie_player:has(.ytp-quick-actions) .sponsorSkipNoticeParent.secondSkipNotice {
+	bottom: 196px !important;
 }
 
 .sponsorSkipNoticeParent, .sponsorSkipNotice {
@@ -322,32 +342,35 @@ div:hover > .sponsorBlockChapterBar {
 
 .sponsorSkipNoticeTableContainer {
 	color: #ffffff;
-	background: rgba(255, 255, 255, 0.14) !important;
-	backdrop-filter: blur(16px) saturate(180%) !important;
-	-webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-	border: 1px solid rgba(255, 255, 255, 0.25) !important;
+	background: rgba(0, 0, 0, 0.6) !important;
+	backdrop-filter: blur(12px) !important;
+	-webkit-backdrop-filter: blur(12px) !important;
+	border: none !important;
 	border-radius: 9999px !important;
-	box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
-	padding: 7px 16px !important;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35) !important;
+	padding: 0 16px !important;
+	height: 38px !important;
+	min-height: 38px !important;
 	min-width: unset !important;
 	width: auto !important;
 	display: inline-flex !important;
 	align-items: center !important;
 	justify-content: center !important;
-	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+	transition: background 0.15s ease, box-shadow 0.15s ease !important;
 	user-select: none !important;
 	cursor: pointer !important;
 }
 
 .sponsorSkipNoticeTableContainer:hover {
-	background: rgba(255, 255, 255, 0.24) !important;
-	border-color: rgba(255, 255, 255, 0.4) !important;
-	box-shadow: 0 10px 36px 0 rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
-	transform: scale(1.02);
+	background: rgba(255, 255, 255, 0.2) !important;
+	border: none !important;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.45) !important;
+	transform: none !important;
 }
 
 .sponsorSkipNoticeTableContainer:active {
-	transform: scale(0.96) !important;
+	background: rgba(255, 255, 255, 0.3) !important;
+	transform: scale(0.98) !important;
 }
 
 /* Ensure ONLY the skip text and icon are displayed in the pill */
@@ -437,14 +460,14 @@ div:hover > .sponsorBlockChapterBar {
 }
 
 .sponsorSkipMessage {
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
-	font-size: 13px !important;
+	font-family: "YouTube Sans", Roboto, Arial, sans-serif !important;
+	font-size: 14px !important;
 	font-weight: 500 !important;
 	color: #ffffff !important;
-	letter-spacing: 0.2px !important;
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+	letter-spacing: 0.15px !important;
+	text-shadow: none !important;
 	margin: 0 !important;
-	line-height: 1 !important;
+	line-height: normal !important;
 	white-space: nowrap !important;
 	float: none !important;
 	display: inline-block !important;
@@ -454,10 +477,11 @@ div:hover > .sponsorBlockChapterBar {
 .sbSkipPillIcon {
 	display: inline-block !important;
 	vertical-align: middle !important;
-	margin-right: 6px !important;
-	opacity: 0.9 !important;
+	margin-right: 8px !important;
+	opacity: 0.95 !important;
 	width: 13px !important;
 	height: 13px !important;
+	flex-shrink: 0 !important;
 }
 
 .sponsorSkipNotice .sponsorSkipNoticeUnskipSection {

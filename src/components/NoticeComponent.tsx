@@ -67,7 +67,7 @@ export interface NoticeState {
 }
 
 // Limits for dragging notice around
-const bounds = [20, 120, 10, 10];
+const bounds = [24, 142, 10, 10];
 
 class NoticeComponent extends React.Component<NoticeProps, NoticeState> {
     countdownInterval: NodeJS.Timeout;
@@ -111,7 +111,7 @@ class NoticeComponent extends React.Component<NoticeProps, NoticeState> {
             mouseDownInfo: null,
             mouseMoved: false,
             right: bounds[0],
-            bottom: props.showInSecondSlot ? 290 : bounds[1]
+            bottom: props.showInSecondSlot ? 196 : bounds[1]
         }
     }
 
@@ -122,9 +122,8 @@ class NoticeComponent extends React.Component<NoticeProps, NoticeState> {
     render(): React.ReactElement {
         const noticeStyle: React.CSSProperties = {
             zIndex: this.props.zIndex || (1000 + this.amountOfPreviousNotices),
-            right: this.state.right,
-            bottom: this.state.bottom,
-            userSelect: this.state.mouseDownInfo && this.state.mouseMoved ? "none" : "auto",
+            ...(this.state.mouseMoved ? { right: this.state.right, bottom: this.state.bottom } : {}),
+            userSelect: this.state.mouseDownInfo && this.state.mouseMoved ? "none" : "auto",
             ...(this.props.style ?? {})
         }
 
@@ -189,7 +188,7 @@ class NoticeComponent extends React.Component<NoticeProps, NoticeState> {
                                                     className="sponsorSkipLogo sponsorSkipObject"/>
                                         )
                                     :
-                                        <svg className="sbSkipPillIcon" fill="currentColor" viewBox="0 0 24 24" style={{ width: "12px", height: "12px", marginRight: "6px", display: "inline-block", verticalAlign: "middle", opacity: 0.85 }}>
+                                        <svg className="sbSkipPillIcon" fill="currentColor" viewBox="0 0 24 24" style={{ width: "13px", height: "13px", marginRight: "8px", display: "inline-block", verticalAlign: "middle", opacity: 0.95, flexShrink: 0 }}>
                                             <path d="M5.055 7.06C3.805 6.347 2.25 7.25 2.25 8.69v6.62c0 1.44 1.555 2.343 2.805 1.63l5.77-3.31c1.23-.705 1.23-2.555 0-3.26l-5.77-3.31zM13.055 7.06C11.805 6.347 10.25 7.25 10.25 8.69v6.62c0 1.44 1.555 2.343 2.805 1.63l5.77-3.31c1.23-.705 1.23-2.555 0-3.26l-5.77-3.31z" />
                                         </svg>
                                     }
